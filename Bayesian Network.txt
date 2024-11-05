@@ -1,0 +1,42 @@
+import pandas as pd
+from pgmpy.models import BayesianNetwork
+from pgmpy.estimators import ParameterEstimator, BayesianEstimator
+from pgmpy.estimators import MaximumLikelihoodEstimator
+from pgmpy.inference import VariableElimination
+
+data = pd.read_csv('heartdisease-IR.csv')
+data.head()
+
+data.tail()
+
+data.info()
+
+data.isnull().sum()
+
+data.isna().sum()
+
+data.describe()
+
+data.columns
+
+data.dtypes
+
+model = BayesianNetwork([('age', 'heartdisease'),
+                        ('Gender', 'heartdisease'),
+                        ('Family', 'heartdisease'),
+                        ('diet', 'heartdisease'),
+                        ('Lifestyle', 'heartdisease'),
+                        ('cholestrol', 'heartdisease')])
+
+model.fit(data, estimator=MaximumLikelihoodEstimator)
+
+HeartDiseasetest_infer = VariableElimination(model)
+
+q1 = HeartDiseasetest_infer.query(variables=['heartdisease'], evidence = {'diet':1})
+print(q1)
+
+q2 = HeartDiseasetest_infer.query(variables=['heartdisease'], evidence={'age' : 4})
+print(q2)
+
+q4 = HeartDiseasetest_infer.query(variables=['heartdisease'], evidence={'cholestrol': 0})
+print(q4)

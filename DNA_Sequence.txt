@@ -1,0 +1,59 @@
+#Read the DNA sequence from file
+with open('dna_sequence-BI.txt', 'r') as file:
+    dna_sequence = file.read().strip()
+
+dna_sequence
+
+# 1. Function to calculate GC content
+def calculate_gc_content(sequence):
+    g_count = sequence.count('G')
+    c_count = sequence.count('C')
+    gc_content = (g_count + c_count) / len(sequence) * 100
+    return gc_content
+
+# 2. Function to find motifs in the DNA sequence
+def find_motifs(sequence, motif):
+    positions = []
+    for i in range(len(sequence) - len(motif) + 1):
+        if sequence[i:i + len(motif)] == motif:
+            positions.append(i)
+    return positions
+
+# 3. Function to identify coding regions (start and stop codons)
+def find_coding_regions(sequence):
+    start_codon = "ATG"
+    stop_codons = ["TAA", "TAG", "TGA"]
+    coding_regions = []
+
+    i = 0
+    while i < len(sequence) - 2:
+        codon = sequence[i:i + 3]
+        if codon == start_codon:
+            # Find the next stop codon after the start codon
+            for j in range(i + 3, len(sequence) - 2, 3):
+                stop_codon = sequence[j:j + 3]
+                if stop_codon in stop_codons:
+                    coding_regions.append((i, j + 3))  # coding region from start to the end of stop codon
+                    i = j + 3
+                    break
+        i += 3
+
+    return coding_regions
+
+# Calculate results
+gc_content = calculate_gc_content(dna_sequence)
+motif_positions = find_motifs(dna_sequence, "ATG")
+coding_regions = find_coding_regions(dna_sequence)
+
+
+
+print(f"GC content : {gc_content}%")
+
+print(f"Motif ATG found at positions : {motif_positions}")
+
+if coding_regions:
+    print("Coding regions : ")
+    for start, end in coding_regions:
+        print(f"Start: {start}, End: {end}")
+else:
+    print("No coding regions found in the sequence.")
